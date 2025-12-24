@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3ᵉ Management - Hub Étudiant</title>
+    <!-- Polices & Icones -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- DESIGN SYSTEM --- */
+        :root {
+            --bg-dark: #0b0c15;
+            --bg-panel: #151621;
+            --bg-card: #1e2130;
+            --primary-neon: #00f3ff; /* Cyan */
+            --secondary-neon: #7000ff; /* Deep Purple */
+            --text-main: #ececec;
+            --text-muted: #94a3b8;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --sidebar-width: 280px;
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- UTILS --- */
+        .neon-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+        .flex { display: flex; }
+        .hidden { display: none !important; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+        .author-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--primary-neon);
+            background: rgba(0, 243, 255, 0.1);
+            padding: 2px 8px; border-radius: 4px;
+            margin-left: 8px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            font-weight: 700; box-shadow: 0 0 5px rgba(0, 243, 255, 0.1);
+        }
+
+        /* --- SIDEBAR --- */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-panel);
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            border-right: 1px solid var(--border-light);
+            transition: transform 0.3s ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+        }
+
+        .logo-area {
+            height: 80px;
+            display: flex; align-items: center; padding: 0 25px;
+            border-bottom: 1px solid var(--border-light);
+            white-space: nowrap; overflow: hidden;
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent);
+        }
+        .logo-icon { font-size: 1.5rem; color: var(--primary-neon); min-width: 30px; filter: drop-shadow(0 0 5px var(--primary-neon)); }
+        .logo-text { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem; margin-left: 15px; letter-spacing: 1px; }
+
+        .nav-list { list-style: none; padding: 30px 15px; overflow-y: auto; flex: 1; }
+        
+        .nav-item {
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex; align-items: center;
+            color: var(--text-muted);
+            transition: var(--transition);
+            white-space: nowrap;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item:hover { 
+            background: rgba(255,255,255,0.03); 
+            color: #fff; 
+            padding-left: 22px;
+        }
+        
+        .nav-item.active { 
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), transparent); 
+            color: var(--primary-neon); 
+            font-weight: 600;
+        }
+        
+        .nav-item.active::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            background: var(--primary-neon);
+            box-shadow: 0 0 10px var(--primary-neon);
+        }
+
+        .nav-item i { width: 30px; text-align: center; font-size: 1.1rem; margin-right: 15px; }
+
+        /* --- MAIN CONTENT --- */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            transition: margin-left 0.3s ease;
+            position: relative;
+        }
+
+        header { margin-bottom: 40px; position: relative; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; letter-spacing: 1px; }
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-top: 5px; }
+        
+        /* --- CARDS GRID --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 25px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            cursor: default;
+        }
+
+        .card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border-color: rgba(0, 243, 255, 0.2);
+        }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-icon { 
+            font-size: 2rem; 
+            background: rgba(112, 0, 255, 0.1); 
+            width: 50px; height: 50px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--secondary-neon);
+            border: 1px solid rgba(112, 0, 255, 0.2);
+            transition: var(--transition);
+        }
+        .card:hover .card-icon {
+            background: var(--secondary-neon);
+            color: white;
+            box-shadow: 0 0 15px var(--secondary-neon);
+        }
+
+        .card h3 { font-size: 1.4rem; margin-bottom: 10px; font-weight: 700; font-family: 'Rajdhani', sans-serif; word-break: break-word; }
+        .card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
+        
+        .doc-list { margin-top: 10px; border-top: 1px solid var(--border-light); padding-top: 15px; }
+        .doc-item { 
+            display: flex; justify-content: space-between; align-items: flex-start; 
+            padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .doc-item:hover { background: rgba(255,255,255,0.02); padding-left: 5px; padding-right: 5px; }
+        .doc-item:last-child { border-bottom: none; }
+        
+        .doc-type { 
+            font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; 
+            background: rgba(255,255,255,0.05); color: var(--text-muted); 
+            margin-right: 10px; border: 1px solid var(--border-light); font-weight: 600;
+            flex-shrink: 0; 
+        }
+        .doc-info { 
+            display: flex; 
+            align-items: center; 
+            flex: 1; 
+            overflow: visible; 
+        }
+        
+        .doc-title { 
+            white-space: normal; 
+            word-break: break-word; 
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        .card-actions { margin-top: auto; display: flex; gap: 10px; }
+        
+        .btn {
+            padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer;
+            font-weight: 600; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary { 
+            background: var(--primary-neon); color: #0b0c15; 
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+        }
+        .btn-primary:hover { 
+            background: #fff; 
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5); 
+        }
+        
+        .btn-outline { 
+            background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); 
+        }
+        .btn-outline:hover { 
+            border-color: var(--primary-neon); color: var(--primary-neon); 
+            background: rgba(0, 243, 255, 0.05);
+        }
+        
+        .btn-upload { 
+            background: linear-gradient(135deg, var(--secondary-neon) 0%, #4a00e0 100%); 
+            color: white; 
+        }
+        .btn-upload:hover { 
+            box-shadow: 0 5px 20px rgba(112, 0, 255, 0.4); 
+            transform: translateY(-2px);
+        }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        #toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary-neon);
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            color: #fff;
+            display: flex; align-items: center; gap: 12px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out forwards;
+            backdrop-filter: blur(10px);
+        }
+        .toast.success { border-color: #00ff88; }
+        .toast.error { border-color: #ff0055; }
+        .toast i { font-size: 1.2rem; }
+        .toast.success i { color: #00ff88; }
+        .toast.error i { color: #ff0055; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* --- MODAL (UPLOAD) --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            z-index: 200; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal.active { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: var(--bg-card); width: 90%; max-width: 500px;
+            padding: 40px; border-radius: 15px; 
+            border: 1px solid var(--border-light);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95); transition: transform 0.3s;
+        }
+        .modal.active .modal-box { transform: scale(1); }
+        
+        /* --- PDF VIEWER MODAL --- */
+        #pdfModal {
+            z-index: 300;
+        }
+        #pdfModal .modal-box {
+            width: 95%; height: 90vh;
+            max-width: none;
+            padding: 0;
+            display: flex; flex-direction: column;
+            border: 1px solid var(--primary-neon);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+        }
+        
+        .pdf-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel);
+        }
+        .pdf-header h3 { font-family: 'Orbitron'; color: var(--primary-neon); font-size: 1.2rem; white-space: normal; word-break: break-word; margin-right: 15px; }
+        .close-pdf-btn { font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+        .close-pdf-btn:hover { color: #fff; transform: rotate(90deg); }
+
+        .pdf-content {
+            flex: 1;
+            background: #f1f1f1;
+            position: relative;
+            overflow: hidden;
+        }
+        .pdf-content iframe {
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        .pdf-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border-light);
+            background: var(--bg-panel);
+            display: flex; justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* --- FORMS --- */
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-label { display:block; margin-bottom:8px; color:var(--primary-neon); font-size: 0.9rem; font-weight: 600; }
+        .form-control {
+            width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-light); color: white; border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif; font-size: 1rem;
+            transition: 0.3s;
+        }
+        .form-control:focus { border-color: var(--primary-neon); box-shadow: 0 0 10px rgba(0, 243, 255, 0.1); }
+        select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 1em; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-100%); width: 280px; }
+            #sidebar.mobile-open { transform: translateX(0); }
+            #main-content { margin-left: 0 !important; padding: 25px; }
+            .mobile-toggle { display: block; position: fixed; top: 20px; right: 20px; z-index: 110; color: var(--primary-neon); font-size: 1.5rem; background: var(--bg-card); padding: 10px; border-radius: 8px; border: 1px solid var(--primary-neon); cursor: pointer; box-shadow: 0 0 10px rgba(0,243,255,0.2); }
+            .grid-container { grid-template-columns: 1fr; }
+            .pdf-header h3 { font-size: 0.9rem; }
+            .pdf-footer .btn { font-size: 0.8rem; padding: 8px 15px; }
+            .doc-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .doc-item button { width: 100%; justify-content: center; }
+        }
+        @media (min-width: 769px) { .mobile-toggle { display: none; } }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Mobile Toggle -->
+    <div class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="logo-area">
+            <i class="fa-solid fa-graduation-cap logo-icon"></i>
+            <span class="logo-text">3ᵉ MGT</span>
+        </div>
+        <ul class="nav-list" id="nav-container">
+            <!-- Navigation générée par JS -->
+        </ul>
+        <div style="padding: 20px; font-size: 0.8rem; color: var(--text-muted); text-align: center; border-top: 1px solid var(--border-light);">
+            &copy; 2023 Student Hub
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <div id="content-area" class="fade-in">
+            <!-- Les cartes et contenu s'affichent ici -->
+        </div>
+    </main>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="font-family: 'Orbitron'; color: var(--primary-neon);">Téléverser</h2>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.2rem; color:var(--text-muted);" onclick="closeUploadModal()"></i>
+            </div>
+            <form id="uploadForm" onsubmit="handleUpload(event)">
+                <input type="hidden" id="targetMatiereId">
+                <div class="form-group">
+                    <label class="form-label">Titre du document</label>
+                    <input type="text" id="docTitle" class="form-control" placeholder="Ex: Cours Chap 1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select id="docType" class="form-control">
+                        <option value="Cours">Cours</option>
+                        <option value="TD">TD</option>
+                        <option value="TP">TP</option>
+                        <option value="Résumé">Résumé</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nom du fichier (dans le dossier documents)</label>
+                    <input type="text" id="docFileLink" class="form-control" placeholder="Ex: mon_fichier.pdf" required>
+                    <small style="color:var(--text-muted); font-size:0.8rem; margin-top:5px; display:block;">
+                        Note: Pour que le fichier fonctionne, il doit être uploadé sur le repository GitHub. Le chemin doit commencer par "./documents/..."
+                    </small>
+                </div>
+                <div style="display:flex; gap:15px; margin-top:30px;">
+                    <button type="button" class="btn btn-outline" style="flex:1;" onclick="closeUploadModal()">Annuler</button>
+                    <button type="submit" class="btn btn-upload" style="flex:1;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+    <div class="modal" id="pdfModal">
+        <div class="modal-box">
+            <div class="pdf-header">
+                <div style="display:flex; align-items:center; flex: 1; overflow: hidden;">
+                    <i class="fa-solid fa-file-pdf" style="color:var(--secondary-neon); font-size:1.5rem; margin-right:15px; flex-shrink: 0;"></i>
+                    <h3 id="pdfTitle">Titre du document</h3>
+                </div>
+                <i class="fa-solid fa-xmark close-pdf-btn" onclick="closePdfViewer()"></i>
+            </div>
+            <div class="pdf-content">
+                <iframe id="pdfFrame" src=""></iframe>
+            </div>
+            <div class="pdf-footer">
+                <!-- Added target="_blank" for better compatibility on mobile -->
+                <a id="downloadPdfBtn" href="#" target="_blank" class="btn btn-primary">
+                    <i class="fa-solid fa-up-right-from-square"></i> Ouvrir dans un nouvel onglet
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DONNÉES (9 Matières) ---
+        const matieresData = [
+            { id: 1, nom: "Management de Projet", icon: "fa-diagram-project", desc: "Planification, méthode Agile, suivi et coûts." },
+            { id: 2, nom: "Théorie des Organisations", icon: "fa-sitemap", desc: "Structures, culture d'entreprise et leadership." },
+            { id: 3, nom: "RSE", icon: "fa-earth-americas", desc: "Responsabilité Sociétale et Environnementale." },
+            { id: 4, nom: "Qualité", icon: "fa-award", desc: "Normes ISO 9001, gestion de la qualité totale." },
+            { id: 5, nom: "Gestion des Risques", icon: "fa-shield-halved", desc: "Analyse de vulnérabilité et stratégies de mitigation." },
+            { id: 6, nom: "Analyse Quali/Quanti", icon: "fa-chart-pie", desc: "Statistiques, sondages et outils d'analyse de données." },
+            { id: 7, nom: "Gestion de Conflits", icon: "fa-handshake", desc: "Médiation, négociation et dynamique de groupe." },
+            { id: 8, nom: "Étude de Cas", icon: "fa-magnifying-glass-chart", desc: "Synthèse des connaissances via cas pratiques." },
+            { id: 9, nom: "Anglais Business", icon: "fa-language", desc: "Communication pro, vocabulaire et présentations." }
+        ];
+
+        // --- DONNÉES DOCUMENTS (REAL FILES ONLY) ---
+        // These match exactly the files you uploaded to GitHub.
+        const initialDocsData = [
+            // --- 1. MANAGEMENT DE PROJET ---
+            // Note: Kept "Mangement" spelling to match your folder name exactly
+            { id: 101, titre: "Chapitres1-2-3", type: "Cours", matiere_id: 1, auteur: "Prof. Nefissa Boudali", link: "./documents/mang/chap123.pdf" },
+            { id: 102, titre: "Chapitre 4-5-6", type: "Cours", matiere_id: 1, auteur: "Prof. Nefissa Boudali", link: "./documents/mang/chap456.pdf" },
+
+            // --- 2. THÉORIE DES ORGANISATIONS ---
+            { id: 201, titre: "Cours: Théorie des Organisations", type: "Cours", matiere_id: 2, auteur: "KBHM", link: "./to/to.pdf" },
+
+            // --- 7. GESTION DE CONFLITS ---
+            { id: 701, titre: "Gestion de conflit", type: "Cours", matiere_id: 7, auteur: "Prof. D", link: "./documents/conflit/conflit.pdf" }
+        ];
+
+        let docsData = [];
+
+        let currentView = 'home';
+
+        // --- INITIALISATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDocuments(); // Load from LocalStorage or use defaults
+            initSidebar();
+            renderHome();
+        });
+
+        // --- LOCAL STORAGE HANDLING ---
+        function loadDocuments() {
+            const savedDocs = localStorage.getItem('studentHubDocs');
+            if (savedDocs) {
+                docsData = JSON.parse(savedDocs);
+            } else {
+                docsData = [...initialDocsData];
+            }
+        }
+
+        function saveDocuments() {
+            localStorage.setItem('studentHubDocs', JSON.stringify(docsData));
+        }
+
+        // --- NOTIFICATIONS (TOAST) ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-circle-info';
+            if (type === 'success') icon = 'fa-circle-check';
+            if (type === 'error') icon = 'fa-circle-exclamation';
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s forwards';
+                toast.addEventListener('animationend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+
+        // --- LOGIQUE D'AFFICHAGE ---
+        function initSidebar() {
+            const list = document.getElementById('nav-container');
+            list.innerHTML = '';
+            
+            list.innerHTML += `<li class="nav-item active" id="nav-home" onclick="renderHome()">
+                <i class="fa-solid fa-house"></i> <span>Tableau de bord</span>
+            </li>`;
+            
+            list.innerHTML += `<li style="height:1px; background:var(--border-light); margin: 10px 20px;"></li>`;
+
+            matieresData.forEach(m => {
+                list.innerHTML += `<li class="nav-item" id="nav-${m.id}" onclick="renderMatiere(${m.id})">
+                    <i class="fa-solid ${m.icon}"></i> <span>${m.nom}</span>
+                </li>`;
+            });
+        }
+
+        function renderHome() {
+            currentView = 'home';
+            updateSidebarActive(null);
+            
+            const container = document.getElementById('content-area');
+            container.classList.remove('fade-in');
+            void container.offsetWidth; 
+            container.classList.add('fade-in');
+
+            container.innerHTML = `
+                <header>
+                    <h1 class="neon-text">Tableau de Bord</h1>
+                    <p class="subtitle">Bienvenue sur votre espace 3ᵉ année. Sélectionnez une matière.</p>
+                </header>
+                <div class="grid-container">
+                ${matieresData.map(m => {
+                    const docCount = docsData.filter(d => d.matiere_id === m.id).length;
+                    // Optional: Show "New" tag only if user added something recently (not in initial data)
+                    
+                    return `
+                    <div class="card" onclick="renderMatiere(${m.id})">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fa-solid ${m.icon}"></i></div>
+                        </div>
+                        <h3>${m.nom}</h3>
+                        <p>${m.desc}</p>
+                        <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">
+                            <i class="fa-regular fa-folder-open"></i> ${docCount} document${docCount > 1 ? 's' : ''} disponible${docCount > 1 ? 's' : ''}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" style="width:100%">Accéder aux cours</button>
+                        </div>
+                    </div>
+                `}).join('')}
+            </div>`;
+        }
+
+        function renderMatiere(id) {
+            currentView = 'details';
+            updateSidebarActive(id);
+            const matiere = matieresData.find(m => m.id === id);
+            const docs = docsData.filter(d => d.matiere_id === id);
+
+            const container = document.getElementById('content-area');
+            container.classList.remove('fade-in');
+            void container.offsetWidth;
+            container.classList.add('fade-in');
+
+            container.innerHTML = `
+                <div style="margin-bottom:30px; display:flex; justify-content:space-between; align-items:end; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <button class="btn btn-outline" onclick="renderHome()" style="margin-bottom:15px; padding: 6px 15px; font-size:0.9rem;">
+                            <i class="fa-solid fa-arrow-left"></i> Retour
+                        </button>
+                        <h2 class="neon-text" style="font-size:2rem; font-family:'Orbitron'; line-height:1;">${matiere.nom}</h2>
+                        <p class="subtitle">${matiere.desc}</p>
+                    </div>
+                    <button class="btn btn-upload" onclick="openUploadModal(${id})">
+                        <i class="fa-solid fa-plus"></i> Ajouter un document
+                    </button>
+                </div>
+                
+                <div class="grid-container" style="grid-template-columns: 1fr;">
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom:0; padding-bottom:15px; border-bottom:1px solid var(--border-light);">
+                            <h3 style="margin:0; font-size:1.4rem;">Ressources pédagogiques</h3>
+                        </div>
+                        ${docs.length > 0 ? `
+                            <div class="doc-list">
+                                ${docs.map(d => `
+                                    <div class="doc-item">
+                                        <div class="doc-info">
+                                            <span class="doc-type">${d.type}</span> 
+                                            <div style="display:flex; flex-direction:column; flex:1;">
+                                                <span class="doc-title">${d.titre}</span>
+                                                ${d.auteur ? `<span style="font-size:0.75rem; color:var(--text-muted);">Par ${d.auteur}</span>` : ''}
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-outline" style="padding: 6px 12px; font-size:0.8rem; border-radius:20px; flex-shrink: 0;" onclick="openPdfViewer('${d.titre.replace(/'/g, "\\'")}', '${d.link}')">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                                <i class="fa-regular fa-folder-open" style="font-size:2rem; margin-bottom:15px; opacity:0.5;"></i>
+                                <p>Aucun document pour le moment.</p>
+                                <p style="font-size:0.8rem; margin-top:10px;">Utilisez le bouton "Ajouter" pour lier un fichier depuis GitHub.</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateSidebarActive(id) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(id) {
+                const el = document.getElementById(`nav-${id}`);
+                if(el) el.classList.add('active');
+            } else {
+                const el = document.getElementById('nav-home');
+                if(el) el.classList.add('active');
+            }
+        }
+
+        // --- PDF VIEWER LOGIC ---
+        function openPdfViewer(titre, link) {
+            const modal = document.getElementById('pdfModal');
+            const frame = document.getElementById('pdfFrame');
+            const titleEl = document.getElementById('pdfTitle');
+            const downloadBtn = document.getElementById('downloadPdfBtn');
+
+            titleEl.innerText = titre;
+            frame.src = link;
+            downloadBtn.href = link;
+            
+            modal.classList.add('active');
+        }
+
+        function closePdfViewer() {
+            const modal = document.getElementById('pdfModal');
+            const frame = document.getElementById('pdfFrame');
+            
+            modal.classList.remove('active');
+            // Clear src to stop loading memory usage
+            setTimeout(() => { frame.src = ""; }, 300);
+        }
+
+        // --- INTERACTIONS ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        }
+
+        function openUploadModal(id) {
+            document.getElementById('targetMatiereId').value = id;
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('uploadForm').reset();
+        }
+
+        document.getElementById('uploadModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('uploadModal')) {
+                closeUploadModal();
+            }
+        });
+        
+        document.getElementById('pdfModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('pdfModal')) {
+                closePdfViewer();
+            }
+        });
+
+        function handleUpload(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalContent = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Traitement...`;
+            submitBtn.disabled = true;
+            
+            const matiereId = parseInt(document.getElementById('targetMatiereId').value);
+            const titre = document.getElementById('docTitle').value;
+            const type = document.getElementById('docType').value;
+            let fileLink = document.getElementById('docFileLink').value;
+            
+            // Auto-prepend ./documents/ if user forgot
+            if (!fileLink.startsWith('./') && !fileLink.startsWith('../')) {
+                fileLink = './documents/' + fileLink;
+            }
+
+            setTimeout(() => {
+                const newDoc = {
+                    id: Date.now(),
+                    titre: titre,
+                    type: type,
+                    matiere_id: matiereId,
+                    auteur: "Moi",
+                    link: fileLink 
+                };
+                
+                // Add to array and save to localStorage
+                docsData.push(newDoc);
+                saveDocuments();
+                
+                showToast(`Document "${titre}" ajouté !`, 'success');
+                
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+                closeUploadModal();
+                
+                if (currentView === 'details' && matieresData.find(m => m.id === matiereId)) {
+                    renderMatiere(matiereId);
+                } else {
+                    renderHome();
+                }
+            }, 800); // Faster feedback
+        }
+    </script>
+</body>
+</html>
