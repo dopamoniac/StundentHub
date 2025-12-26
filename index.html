@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SECURITY HEADERS -->
+    <!-- SECURITY HEADERS (Active enforcement, but no JS alerts) -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data: https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'; object-src 'none'; frame-src 'self'; base-uri 'self'; form-action 'self';">
     <meta http-equiv="Referrer-Policy" content="no-referrer-when-downgrade">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), camera=(), microphone=(), interest-cohort=()">
@@ -25,8 +25,8 @@
         /* --- DESIGN SYSTEM --- */
         :root {
             --bg-deep: #020205;
-            --bg-panel: rgba(20, 20, 30, 0.75); 
-            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-panel: rgba(20, 20, 30, 0.85); 
+            --bg-card: rgba(255, 255, 255, 0.04);
             --primary-neon: #00f3ff; 
             --secondary-neon: #bc13fe; 
             --text-main: #ffffff;
@@ -34,10 +34,10 @@
             --border-light: rgba(255, 255, 255, 0.08);
             --sidebar-width: 280px;
             --radius: 12px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; cursor: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; cursor: auto; }
         
         body {
             background-color: var(--bg-deep);
@@ -49,161 +49,86 @@
             position: relative;
         }
 
-        /* --- CINEMATIC INTRO (NEW) --- */
+        /* --- FAST INTRO (Reduced to 1.5s) --- */
         #cyber-intro {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease-out, visibility 1s;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
             pointer-events: all;
         }
-
-        #cyber-intro.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
+        #cyber-intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         .glitch-wrapper {
-            position: relative;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 4rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5rem;
-            color: white;
-            text-shadow: 0 0 20px var(--primary-neon);
-            margin-bottom: 20px;
+            position: relative; font-family: 'Orbitron', sans-serif; font-weight: 900;
+            font-size: 4rem; text-transform: uppercase; letter-spacing: 0.5rem;
+            color: white; text-shadow: 0 0 20px var(--primary-neon); margin-bottom: 20px;
         }
-
-        /* Glitch Animation */
         .glitch-wrapper::before, .glitch-wrapper::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;
         }
-        .glitch-wrapper::before {
-            left: 2px; text-shadow: -1px 0 #ff0055; clip-path: inset(0 0 0 0);
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
-        }
-        .glitch-wrapper::after {
-            left: -2px; text-shadow: -1px 0 #00f3ff; clip-path: inset(0 0 0 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
-        }
+        .glitch-wrapper::before { left: 2px; text-shadow: -1px 0 #ff0055; clip-path: inset(0 0 0 0); animation: glitch-anim-1 2s infinite linear alternate-reverse; }
+        .glitch-wrapper::after { left: -2px; text-shadow: -1px 0 #00f3ff; clip-path: inset(0 0 0 0); animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+        @keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); } 20% { clip-path: inset(60% 0 10% 0); } 40% { clip-path: inset(40% 0 50% 0); } 60% { clip-path: inset(80% 0 5% 0); } 80% { clip-path: inset(10% 0 70% 0); } 100% { clip-path: inset(30% 0 50% 0); } }
+        @keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(30% 0 20% 0); } 40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); } 80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); } }
 
-        @keyframes glitch-anim-1 {
-            0% { clip-path: inset(20% 0 80% 0); }
-            20% { clip-path: inset(60% 0 10% 0); }
-            40% { clip-path: inset(40% 0 50% 0); }
-            60% { clip-path: inset(80% 0 5% 0); }
-            80% { clip-path: inset(10% 0 70% 0); }
-            100% { clip-path: inset(30% 0 50% 0); }
-        }
-        @keyframes glitch-anim-2 {
-            0% { clip-path: inset(10% 0 60% 0); }
-            20% { clip-path: inset(30% 0 20% 0); }
-            40% { clip-path: inset(70% 0 10% 0); }
-            60% { clip-path: inset(20% 0 50% 0); }
-            80% { clip-path: inset(50% 0 30% 0); }
-            100% { clip-path: inset(5% 0 80% 0); }
-        }
-
-        .intro-sub {
-            font-family: 'Rajdhani', sans-serif;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            opacity: 0;
-            animation: fadeIn 1s forwards 1s;
-        }
-
-        .loader-bar {
-            width: 200px; height: 4px; background: #222;
-            margin-top: 30px; border-radius: 2px; overflow: hidden;
-            opacity: 0; animation: fadeIn 1s forwards 1.2s;
-        }
-        .loader-progress {
-            height: 100%; background: var(--primary-neon);
-            width: 0%;
-            animation: loadProgress 2.5s ease-in-out forwards 1.5s;
-            box-shadow: 0 0 10px var(--primary-neon);
-        }
-
+        .intro-sub { font-family: 'Rajdhani', sans-serif; color: var(--text-muted); font-size: 1.2rem; letter-spacing: 2px; opacity: 0; animation: fadeIn 1s forwards 0.5s; }
+        .loader-bar { width: 200px; height: 4px; background: #222; margin-top: 30px; border-radius: 2px; overflow: hidden; opacity: 0; animation: fadeIn 1s forwards 0.7s; }
+        .loader-progress { height: 100%; background: var(--primary-neon); width: 0%; animation: loadProgress 1s ease-in-out forwards 0.8s; box-shadow: 0 0 10px var(--primary-neon); }
         @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
         @keyframes fadeIn { to { opacity: 1; } }
 
         /* --- BACKGROUND --- */
-        #bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; overflow: hidden; background: radial-gradient(circle at 50% 50%, #11111f 0%, #000000 100%);
-            opacity: 0; transition: opacity 1s;
-        }
+        #bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; background: radial-gradient(circle at 50% 50%, #11111f 0%, #000000 100%); opacity: 0; transition: opacity 0.5s; }
         #bg-animation.visible { opacity: 1; }
-
-        /* Canvas & Orbs */
-        #canvas-network { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.5; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.3; animation: floatOrb 20s infinite alternate ease-in-out; z-index: -1; }
-        .orb-1 { width: 50vw; height: 50vw; background: var(--secondary-neon); top: -10%; left: -10%; animation-duration: 25s; }
-        .orb-2 { width: 40vw; height: 40vw; background: var(--primary-neon); bottom: -10%; right: -10%; animation-duration: 30s; }
+        #canvas-network { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.25; animation: floatOrb 25s infinite alternate ease-in-out; z-index: -1; will-change: transform; }
+        .orb-1 { width: 50vw; height: 50vw; background: var(--secondary-neon); top: -10%; left: -10%; animation-duration: 30s; }
+        .orb-2 { width: 40vw; height: 40vw; background: var(--primary-neon); bottom: -10%; right: -10%; animation-duration: 35s; }
         @keyframes floatOrb { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
-
-        /* --- SPEEDER MOUSE --- */
-        .cursor-dot, .cursor-outline {
-            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%) translate3d(0,0,0); 
-            border-radius: 50%; z-index: 99999; pointer-events: none; will-change: transform;
-        }
-        .cursor-dot { width: 8px; height: 8px; background-color: var(--primary-neon); box-shadow: 0 0 10px var(--primary-neon); }
-        .cursor-outline {
-            width: 40px; height: 40px; border: 1px solid var(--primary-neon);
-            transition: width 0.1s, height 0.1s, background-color 0.1s, border-color 0.1s, transform 0.08s cubic-bezier(0.1, 0.7, 1.0, 0.1);
-        }
-        body.hovering .cursor-outline {
-            width: 60px; height: 60px; background-color: rgba(0, 243, 255, 0.05); border-color: var(--secondary-neon); mix-blend-mode: screen;
-        }
-        @media (hover: none) and (pointer: coarse) { * { cursor: auto; } .cursor-dot, .cursor-outline { display: none; } }
 
         /* --- UI COMPONENTS --- */
         .neon-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
         .flex { display: flex; }
         .hidden-el { display: none !important; }
         
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .stagger-item { opacity: 0; animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; will-change: opacity, transform; }
+        /* REMOVED STAGGER ANIMATIONS (Instant Display) */
+        .stagger-item { 
+            animation: none; /* DELETED: No animation */
+            opacity: 1; 
+            transform: none;
+            will-change: auto;
+        }
 
         .dopaem-sig {
             font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--text-muted);
             text-align: center; border-top: 1px solid var(--border-light); padding: 20px;
-            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center; gap: 5px;
+            background: rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; gap: 5px;
         }
         .dopaem-sig a { color: var(--primary-neon); font-weight: 700; text-decoration: none; }
 
-        .haptic-click { animation: pulseClick 0.3s ease-out; }
+        .haptic-click { animation: pulseClick 0.2s ease-out; }
         @keyframes pulseClick { 0% { transform: scale(0.95); } 50% { transform: scale(0.98); } 100% { transform: scale(1); } }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loader {
-            border: 4px solid rgba(255, 255, 255, 0.1); border-left: 4px solid var(--primary-neon);
+            border: 4px solid rgba(255,255,255,0.1); border-left: 4px solid var(--primary-neon);
             border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
         }
 
         /* --- SIDEBAR --- */
         #sidebar {
-            width: var(--sidebar-width); background: var(--bg-panel); backdrop-filter: blur(12px);
+            width: var(--sidebar-width); background: var(--bg-panel); 
             border-right: 1px solid var(--border-light); height: 100vh; position: fixed;
-            left: 0; top: 0; transition: transform 0.3s ease; z-index: 100;
+            left: 0; top: 0; transition: transform 0.25s ease; z-index: 100;
             display: flex; flex-direction: column; box-shadow: 5px 0 30px rgba(0,0,0,0.5); will-change: transform;
         }
-        .logo-area {
-            height: 80px; display: flex; align-items: center; padding: 0 25px;
-            border-bottom: 1px solid var(--border-light); background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent);
+        @media (max-width: 768px) {
+            #sidebar, .card, .modal-box { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+            #sidebar { background: #151621; }
+            .card, .modal-box { background: #1e2130; }
         }
+        .logo-area { height: 80px; display: flex; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--border-light); background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent); }
         .logo-icon { font-size: 1.5rem; color: var(--primary-neon); min-width: 30px; filter: drop-shadow(0 0 5px var(--primary-neon)); }
         .logo-text { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem; margin-left: 15px; letter-spacing: 1px; }
         .nav-list { list-style: none; padding: 30px 15px; overflow-y: auto; flex: 1; }
@@ -221,7 +146,7 @@
         .nav-item i { width: 30px; text-align: center; font-size: 1.1rem; margin-right: 15px; }
 
         /* --- MAIN --- */
-        #main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; position: relative; perspective: 1000px; opacity: 0; transition: opacity 1s 3s; }
+        #main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; position: relative; perspective: 1000px; opacity: 0; transition: opacity 0.3s; }
         #main-content.visible { opacity: 1; }
         header { margin-bottom: 40px; position: relative; }
         h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; letter-spacing: 1px; }
@@ -257,6 +182,38 @@
         .doc-title { white-space: normal; word-break: break-word; line-height: 1.4; color: var(--text-main); }
         .card-actions { margin-top: auto; display: flex; gap: 10px; transform: translateZ(35px); }
         
+        /* --- BIGGER DOCUMENT BUTTON --- */
+        .btn-doc {
+            /* Bigger and Bolder */
+            padding: 12px 25px; /* Increased padding */
+            border-radius: 8px; /* Slightly rounder */
+            border: 2px solid var(--text-muted); /* Bolder border */
+            cursor: pointer; font-weight: 800; /* Max bold */
+            font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; /* Bigger font */
+            letter-spacing: 1px;
+            transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-transform: uppercase; position: relative; overflow: hidden;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        
+        /* Hover state for Big Button */
+        .btn-doc:hover {
+            border-color: var(--primary-neon); 
+            color: var(--primary-neon); 
+            background: rgba(0, 243, 255, 0.1);
+            transform: scale(1.05); /* Slight grow */
+        }
+        
+        /* Click pulse */
+        .btn-doc:active { transform: scale(0.98); }
+
+        .btn-doc:disabled { 
+            cursor: not-allowed; opacity: 0.5; border-color: var(--border-light); 
+            background: transparent; color: var(--text-muted); 
+            transform: none; 
+        }
+
+        /* Standard Buttons (kept smaller for navigation) */
         .btn {
             padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600;
             font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; letter-spacing: 0.5px;
@@ -273,12 +230,11 @@
         .btn-primary:active { transform: scale(0.95); }
         .btn-outline { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); }
         .btn-outline:hover { border-color: var(--primary-neon); color: var(--primary-neon); background: rgba(0, 243, 255, 0.05); }
-        .btn:disabled { cursor: not-allowed; opacity: 0.5; border-color: var(--text-muted); background: transparent; color: var(--text-muted); }
 
         /* --- TOAST --- */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .toast {
-            background: rgba(20, 20, 30, 0.9); backdrop-filter: blur(10px); border-left: 4px solid var(--primary-neon);
+            background: rgba(20, 20, 30, 0.95); border-left: 4px solid var(--primary-neon);
             padding: 15px 20px; border-radius: 4px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
             color: #fff; display: flex; align-items: center; gap: 12px; min-width: 300px;
             animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; pointer-events: all;
@@ -288,14 +244,14 @@
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         /* --- MODAL --- */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .modal.active { opacity: 1; pointer-events: all; }
-        .modal-box { background: var(--bg-panel); backdrop-filter: blur(12px); width: 90%; max-width: 500px; padding: 40px; border-radius: 15px; border: 1px solid var(--border-light); box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); transform: scale(0.95); transition: transform 0.3s; }
+        .modal-box { background: var(--bg-panel); width: 90%; max-width: 500px; padding: 40px; border-radius: 15px; border: 1px solid var(--border-light); box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); transform: scale(0.95); transition: transform 0.3s; }
         .modal.active .modal-box { transform: scale(1); }
         
         #pdfModal { z-index: 300; }
         #pdfModal .modal-box { width: 95%; height: 90vh; max-width: none; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--primary-neon); box-shadow: 0 0 50px rgba(0, 243, 255, 0.2); background: #000; }
-        .pdf-header { padding: 15px 25px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); backdrop-filter: blur(10px); flex-shrink: 0; z-index: 10; }
+        .pdf-header { padding: 15px 25px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); flex-shrink: 0; z-index: 10; }
         .pdf-header h3 { font-family: 'Orbitron'; color: var(--primary-neon); font-size: 1.2rem; white-space: normal; word-break: break-word; margin-right: 15px; line-height: 1.2; }
         .close-pdf-btn { font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.3s; flex-shrink: 0; }
         .close-pdf-btn:hover { color: #fff; transform: rotate(90deg); }
@@ -303,18 +259,12 @@
         .pdf-content { flex: 1; background: #0a0a0a; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         .pdf-loader-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; transition: opacity 0.3s; }
         .loading-text { margin-top: 15px; color: var(--text-muted); font-size: 0.9rem; letter-spacing: 1px; }
-        
-        /* Styled File Error Message */
-        .file-error-msg {
-            position: absolute; bottom: 20px; background: rgba(255, 170, 0, 0.15); border: 1px solid #ffaa00;
-            padding: 20px; border-radius: 8px; color: #ffaa00; max-width: 400px; text-align: center;
-            z-index: 20; display: none; backdrop-filter: blur(5px); box-shadow: 0 0 20px rgba(255, 170, 0, 0.2);
-        }
+        .file-error-msg { position: absolute; bottom: 20px; background: rgba(255, 170, 0, 0.15); border: 1px solid #ffaa00; padding: 20px; border-radius: 8px; color: #ffaa00; max-width: 400px; text-align: center; z-index: 20; display: none; box-shadow: 0 0 20px rgba(255, 170, 0, 0.2); }
         .file-error-msg i { font-size: 2rem; margin-bottom: 10px; display: block; }
 
         .pdf-content iframe { width: 100%; height: 100%; border: none; opacity: 0; transition: opacity 0.5s ease-in; }
         .pdf-content iframe.loaded { opacity: 1; }
-        .pdf-footer { padding: 15px 25px; border-top: 1px solid var(--border-light); background: var(--bg-panel); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-shrink: 0; }
+        .pdf-footer { padding: 15px 25px; border-top: 1px solid var(--border-light); background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-shrink: 0; }
         .fallback-btn { background: #ffaa00; color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; display: none; font-size: 0.8rem; transition: 0.3s; }
         .fallback-btn:hover { background: #ffcc00; box-shadow: 0 0 10px #ffaa00; }
 
@@ -322,7 +272,7 @@
             #sidebar { transform: translateX(-100%); width: 280px; }
             #sidebar.mobile-open { transform: translateX(0); }
             #main-content { margin-left: 0 !important; padding: 25px; }
-            .mobile-toggle { display: block; position: fixed; top: 20px; right: 20px; z-index: 110; color: var(--primary-neon); font-size: 1.5rem; background: rgba(20, 20, 30, 0.8); backdrop-filter: blur(10px); padding: 10px; border-radius: 8px; border: 1px solid var(--primary-neon); cursor: pointer; }
+            .mobile-toggle { display: block; position: fixed; top: 20px; right: 20px; z-index: 110; color: var(--primary-neon); font-size: 1.5rem; background: #1e2130; padding: 10px; border-radius: 8px; border: 1px solid var(--primary-neon); }
             .grid-container { grid-template-columns: 1fr; }
             .pdf-header h3 { font-size: 0.9rem; }
             .pdf-footer .btn { font-size: 0.8rem; padding: 8px 15px; }
@@ -336,10 +286,10 @@
 </head>
 <body>
 
-    <!-- CINEMATIC INTRO -->
+    <!-- FAST INTRO (1.5s Total) -->
     <div id="cyber-intro">
         <div class="glitch-wrapper" data-text="@Dopaem">@Dopaem</div>
-        <div class="intro-sub">SYSTEM INITIALIZING...</div>
+        <div class="intro-sub">SYSTEM READY...</div>
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
@@ -351,10 +301,6 @@
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
     </div>
-
-    <!-- CUSTOM SPEEDER MOUSE -->
-    <div class="cursor-dot" data-cursor-dot></div>
-    <div class="cursor-outline" data-cursor-outline></div>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
@@ -405,14 +351,11 @@
                     <div class="loader"></div>
                     <div class="loading-text">ACQUIRING DATA STREAM...</div>
                 </div>
-                
-                <!-- FIXED: Specific Local File Error Handling -->
                 <div id="fileError" class="file-error-msg">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <h4 style="margin-bottom:5px;">FILE SYSTEM ERROR</h4>
                     <p style="font-size:0.85rem; color:#ffcc00;">Local file not detected. (This is a demo environment)</p>
                 </div>
-
                 <iframe id="pdfFrame" src="" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
             </div>
             
@@ -430,7 +373,7 @@
     <script>
         /**
          * SECURED BY @Dopaem
-         * v4.0: Ultimate Fixed & Intro Edition
+         * v7.0: FINAL ULTIMATE (No Security Alerts, Instant Load, Big Buttons)
          */
 
         // --- RUNTIME DEFENSE ---
@@ -438,10 +381,11 @@
         Object.freeze(Array.prototype);
         Object.freeze(String.prototype);
 
-        document.addEventListener('securitypolicyviolation', (e) => {
-            console.error('[SECURITY ALERT] Blocked violation:', e);
-            showToast(`Sécurité: Tentative de blocage (${e.violatedDirective})`, 'error');
-        });
+        // --- NO SECURITY ALERTS (Fixed Mobile Popup) ---
+        // document.addEventListener('securitypolicyviolation', (e) => {
+        //    console.error('[SECURITY ALERT] Blocked violation:', e);
+        //    showToast(`Sécurité: Tentative de blocage (${e.violatedDirective})`, 'error');
+        // });
 
         // --- DONNÉES ---
         const matieresData = [
@@ -519,35 +463,36 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Start the Intro Sequence
-            runIntroSequence();
-
+            // 1. Render Instantly
             loadDocuments(); 
             initSidebar();
             setupEventListeners();
-            initSpeederMouse();
-            initOptimizedNetwork();
             
-            // Render content in background, show after intro
+            // Render Dashboard FIRST (Priority)
             renderHome();
+
+            // 2. Then start Intro Sequence
+            runFastIntro();
+
+            // 3. Start Canvas LAST (Don't block UI)
+            setTimeout(initOptimizedNetwork, 500);
         });
 
-        // --- INTRO SEQUENCE LOGIC ---
-        function runIntroSequence() {
+        // --- FAST INTRO SEQUENCE (1.5s) ---
+        function runFastIntro() {
             const intro = document.getElementById('cyber-intro');
             const bg = document.getElementById('bg-animation');
             const main = document.getElementById('main-content');
 
-            // Total intro duration matches CSS animation times (approx 4.5s)
+            // Reduced delay from 3.5s to 1.5s
             setTimeout(() => {
                 intro.classList.add('hidden');
                 bg.classList.add('visible');
                 main.classList.add('visible');
                 document.body.style.overflow = 'auto'; // Re-enable scroll
                 
-                // Remove from DOM after transition
-                setTimeout(() => intro.remove(), 1000);
-            }, 3500);
+                setTimeout(() => intro.remove(), 500);
+            }, 1500);
         }
 
         function loadDocuments() {
@@ -617,52 +562,26 @@
             });
         }
 
-        // --- SPEEDER MOUSE ENGINE ---
-        function initSpeederMouse() {
-            const cursorDot = document.querySelector('[data-cursor-dot]');
-            const cursorOutline = document.querySelector('[data-cursor-outline]');
-            if (window.matchMedia("(pointer: coarse)").matches) {
-                cursorDot.style.display = 'none';
-                cursorOutline.style.display = 'none';
-                document.body.style.cursor = 'auto';
-                return;
-            }
-            window.addEventListener("mousemove", function (e) {
-                const posX = e.clientX;
-                const posY = e.clientY;
-                cursorDot.style.left = `${posX}px`;
-                cursorDot.style.top = `${posY}px`;
-                cursorOutline.style.transform = `translate(-50%, -50%) translate3d(${posX}px, ${posY}px, 0)`;
-            }, { passive: true });
-            document.body.addEventListener('mouseover', (e) => {
-                if (e.target.closest('a, button, .nav-item, .card, .mobile-toggle, .close-pdf-btn')) {
-                    document.body.classList.add('hovering');
-                }
-            });
-            document.body.addEventListener('mouseout', (e) => {
-                if (e.target.closest('a, button, .nav-item, .card, .mobile-toggle, .close-pdf-btn')) {
-                    document.body.classList.remove('hovering');
-                }
-            });
-        }
-
-        // --- OPTIMIZED CANVAS ---
+        // --- OPTIMIZED CANVAS (Non-Blocking) ---
         function initOptimizedNetwork() {
             const canvas = document.getElementById('canvas-network');
             const ctx = canvas.getContext('2d');
             let particles = [];
             let animationFrameId;
+            
             const getParticleCount = () => {
                 const width = window.innerWidth;
-                if (width < 768) return 40;
-                if (width < 1200) return 70;
-                return 100;
+                if (width < 768) return 20; 
+                if (width < 1200) return 35;
+                return 50; 
             };
+
             function resizeCanvas() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
                 initParticles();
             }
+
             function initParticles() {
                 particles = [];
                 const count = getParticleCount();
@@ -670,23 +589,27 @@
                     particles.push({
                         x: Math.random() * canvas.width,
                         y: Math.random() * canvas.height,
-                        vx: (Math.random() - 0.5) * 0.3,
-                        vy: (Math.random() - 0.5) * 0.3,
+                        vx: (Math.random() - 0.5) * 0.2,
+                        vy: (Math.random() - 0.5) * 0.2,
                         size: Math.random() * 2 + 1
                     });
                 }
             }
+
             function animateParticles() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const maxDist = 140;
+                const maxDist = 180; 
                 const maxDistSq = maxDist * maxDist;
+                
                 for (let i = 0; i < particles.length; i++) {
                     let p = particles[i];
                     p.x += p.vx; p.y += p.vy;
                     if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                     if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fillStyle = "rgba(0, 243, 255, 0.5)"; ctx.fill();
+
                     for (let j = i + 1; j < particles.length; j++) {
                         let p2 = particles[j];
                         let dx = p.x - p2.x; let dy = p.y - p2.y;
@@ -701,6 +624,7 @@
                 }
                 animationFrameId = requestAnimationFrame(animateParticles);
             }
+
             let resizeTimeout;
             window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(resizeCanvas, 100); });
             resizeCanvas();
@@ -747,43 +671,55 @@
             });
         }
 
+        // --- OPTIMIZED RENDER: HOME (Instant Display) ---
+        // Uses Template Strings for faster DOM injection than createElement
         function renderHome() {
             const container = document.getElementById('content-area');
+            // Clear first
             container.innerHTML = ''; 
-            const header = createElement('header', ['stagger-item']);
-            header.style.animationDelay = '0ms';
-            const h1 = createElement('h1', ['neon-text'], 'Tableau de Bord');
-            const p = createElement('p', ['subtitle'], 'Bienvenue sur votre espace 3ᵉ année. Sélectionnez une matière.');
-            header.appendChild(h1); header.appendChild(p);
-            container.appendChild(header);
-            const grid = createElement('div', ['grid-container']);
+            
+            // Build Header
+            const headerHTML = `
+                <header class="stagger-item">
+                    <h1 class="neon-text">Tableau de Bord</h1>
+                    <p class="subtitle">Bienvenue sur votre espace 3ᵉ année. Sélectionnez une matière.</p>
+                </header>
+            `;
+            
+            // Build Grid String (Faster than loop+append)
+            let gridHTML = '<div class="grid-container">';
             matieresData.forEach((m, index) => {
                 const docCount = docsData.filter(d => d.matiere_id === m.id).length;
-                const card = createElement('div', ['card', 'stagger-item']);
-                card.style.animationDelay = `${200 + (index * 100)}ms`;
-                initTiltEffect(card);
-                card.addEventListener('click', () => renderMatiere(m.id));
-                const cardHeader = createElement('div', ['card-header']);
-                const cardIcon = createElement('div', ['card-icon']);
-                cardIcon.innerHTML = `<i class="fa-solid ${sanitizeString(m.icon)}"></i>`;
-                cardHeader.appendChild(cardIcon);
-                card.appendChild(cardHeader);
-                const title = createElement('h3', [], m.nom);
-                card.appendChild(title);
-                const desc = createElement('p', [], m.desc);
-                card.appendChild(desc);
-                const countDiv = createElement('div');
-                countDiv.style.fontSize = '0.85rem'; countDiv.style.color = 'var(--text-muted)';
-                countDiv.style.marginBottom = '20px';
-                countDiv.innerHTML = `<i class="fa-regular fa-folder-open"></i> ${docCount} document${docCount > 1 ? 's' : ''} disponible${docCount > 1 ? 's' : ''}`;
-                card.appendChild(countDiv);
-                const actions = createElement('div', ['card-actions']);
-                const btn = createElement('button', ['btn', 'btn-primary'], 'Accéder aux cours');
-                btn.style.width = '100%'; actions.appendChild(btn);
-                card.appendChild(actions);
-                grid.appendChild(card);
+                const iconClass = sanitizeString(m.icon);
+                
+                gridHTML += `
+                    <div class="card stagger-item" data-matierid="${m.id}">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fa-solid ${iconClass}"></i></div>
+                        </div>
+                        <h3>${m.nom}</h3>
+                        <p>${m.desc}</p>
+                        <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">
+                            <i class="fa-regular fa-folder-open"></i> ${docCount} document${docCount > 1 ? 's' : ''} disponible${docCount > 1 ? 's' : ''}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" style="width:100%">Accéder aux cours</button>
+                        </div>
+                    </div>
+                `;
             });
-            container.appendChild(grid);
+            gridHTML += '</div>';
+
+            // Inject All at Once
+            container.innerHTML = headerHTML + gridHTML;
+
+            // Re-attach Event Listeners (Tilt) to new cards
+            const cards = container.querySelectorAll('.card');
+            cards.forEach(card => {
+                initTiltEffect(card);
+                const id = parseInt(card.getAttribute('data-matierid'));
+                card.addEventListener('click', () => renderMatiere(id));
+            });
         }
 
         function renderMatiere(id) {
@@ -843,14 +779,22 @@
                         textCol.appendChild(authorSpan);
                     }
                     info.appendChild(textCol);
-                    const btn = createElement('button', ['btn', 'btn-outline']);
-                    btn.style.padding = '6px 12px'; btn.style.fontSize = '0.8rem';
-                    btn.style.borderRadius = '20px'; btn.style.flexShrink = '0';
+                    
+                    // USING BIGGER BUTTON CLASS
+                    const btn = createElement('button', ['btn-doc']); 
+                    
+                    btn.style.padding = '12px 25px';
+                    btn.style.fontSize = '1.1rem';
+                    btn.style.fontWeight = '800';
+                    btn.style.borderRadius = '8px';
+                    btn.style.border = '2px solid var(--text-muted)';
+                    btn.style.flexShrink = '0';
+                    
                     if (isPlaceholder) {
                         btn.disabled = true;
                         btn.innerHTML = '<i class="fa-solid fa-ban"></i>';
                     } else {
-                        btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+                        btn.innerHTML = '<i class="fa-solid fa-eye"></i> VOIR LE DOCUMENT'; /* Bigger Text */
                         btn.dataset.title = d.titre;
                         btn.dataset.link = d.link;
                         btn.addEventListener('click', (e) => {
@@ -889,7 +833,6 @@
             if(currentPdfLink) window.open(currentPdfLink, '_blank', 'noopener,noreferrer');
         }
 
-        // FIXED: Better Error Handling for PDFs
         function openPdfViewer(titre, link) {
             if (!link || link === '#') return;
             if (window.innerWidth < 768) {
@@ -917,9 +860,6 @@
             frame.src = link;
 
             if(loadTimer) clearTimeout(loadTimer);
-            
-            // FIX: If file is local (starts with .), assume it might not exist in a demo environment
-            // and trigger error faster to prevent infinite spinner.
             const isLocal = link.startsWith('./') || link.startsWith('/');
             const timeoutDuration = isLocal ? 2000 : 5000; 
 
@@ -927,15 +867,12 @@
                 if (!frame.classList.contains('loaded')) {
                     console.warn("PDF Load Timeout - Assuming Error or Missing File");
                     loader.classList.add('hidden');
-                    
-                    // Show the specific "File System Error" instead of generic block
                     fileError.style.display = 'block';
                     fileError.innerHTML = `
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <h4 style="margin-bottom:5px;">FILE SYSTEM ERROR</h4>
                         <p style="font-size:0.85rem; color:#ffcc00;">File not found on local server.</p>
                     `;
-                    
                     fallbackBtn.style.display = 'block';
                     fallbackBtn.textContent = "Try Direct Link";
                 }
